@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us - Marine Waste Detection</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #4F46E5;
+            --secondary-color: #10B981;
+            --accent-color: #4CAF50;
+            --text-color: #333;
+            --light-text: #fff;
+            --card-bg: rgba(255, 255, 255, 0.9);
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            --border-radius: 12px;
+            --transition: all 0.3s ease;
+            --bg-color: #b92b27;
+        }
+
+        body {
+            background: #b92b27;  /* fallback for old browsers */
+            background: -webkit-linear-gradient(to right, #1565C0, #b92b27);  /* Chrome 10-25, Safari 5.1-6 */
+            background: linear-gradient(to right, #1565C0, #b92b27); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+            background-size: 300% 300%;
+            animation: gradientMove 15s ease infinite;
+            min-height: 100vh;
+            padding: 20px;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            color: var(--text-color);
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 25% 25%, rgba(0, 0, 0, 0.05) 1px, transparent 1px),
+                radial-gradient(circle at 75% 75%, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: 0;
+            opacity: 0.5;
+        }
+
+        @keyframes gradientMove {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            color: #ffffff;
+            font-size: 3.2rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            padding-bottom: 15px;
+        }
+
+        .header .lead {
+            color: #E0FFFF;
+            font-size: 1.4rem;
+            font-weight: 500;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #4F46E5;
+            padding: 12px 24px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border: 2px solid #4F46E5;
+            position: relative;
+            z-index: 1;
+        }
+
+        .back-button:hover {
+            background: rgba(79, 70, 229, 0.1);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 15px rgba(79, 70, 229, 0.2);
+            color: #4338CA;
+            border-color: #4338CA;
+        }
+
+        .back-button i {
+            font-size: 1.2rem;
+        }
+
+        .contact-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(8px);
+            border-radius: 24px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            padding: 40px;
+            margin-top: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .contact-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 200px;
+            height: 200px;
+            background: linear-gradient(135deg, rgba(79, 70, 229, 0.1), rgba(16, 185, 129, 0.1));
+            border-radius: 50%;
+            transform: translate(30%, -30%);
+        }
+
+        .contact-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .contact-card {
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(79, 70, 229, 0.2);
+        }
+
+        .contact-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, rgba(79, 70, 229, 0.1), rgba(16, 185, 129, 0.1));
+            border-radius: 50%;
+            transform: translate(30%, -30%);
+        }
+
+        .contact-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+            background: #ffffff;
+        }
+
+        .contact-card h3 {
+            color: #2c3e50;
+            font-weight: 700;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            position: relative;
+            padding-bottom: 15px;
+        }
+
+        .contact-card h3::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(90deg, #4F46E5, #10B981);
+            border-radius: 3px;
+        }
+
+        .email-link {
+            display: block;
+            color: #4F46E5;
+            text-decoration: none;
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 1;
+        }
+
+        .email-link:hover {
+            color: #4338CA;
+            transform: translateX(5px);
+        }
+
+        .email-link i {
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+
+        .footer {
+            background: transparent;
+            backdrop-filter: none;
+            margin-top: 40px;
+            padding: 30px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                rgba(255, 255, 255, 0.3) 50%, 
+                transparent 100%
+            );
+        }
+
+        .footer p {
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 1.4rem;
+            margin-bottom: 25px;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            position: relative;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            animation: glow 2s ease-in-out infinite;
+        }
+
+        @keyframes glow {
+            0%, 100% { text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); }
+            50% { text-shadow: 0 0 15px rgba(255, 255, 255, 0.5); }
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            position: relative;
+        }
+
+        .social-links::before {
+            content: '';
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #ffffff, transparent);
+        }
+
+        .social-links a {
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 12px 28px;
+            border-radius: 30px;
+            backdrop-filter: blur(5px);
+            transition: all 0.4s ease;
+            text-decoration: none;
+            font-weight: 500;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .social-links a::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(255, 255, 255, 0.2),
+                transparent
+            );
+            transition: 0.5s;
+        }
+
+        .social-links a:hover::before {
+            left: 100%;
+        }
+
+        .social-links a:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .social-links a i {
+            font-size: 1.2rem;
+            transition: transform 0.3s ease;
+        }
+
+        .social-links a:hover i {
+            transform: scale(1.2);
+        }
+
+        .footer-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .footer-glow {
+            position: absolute;
+            bottom: -50px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 100px;
+            background: radial-gradient(
+                circle at center,
+                rgba(255, 255, 255, 0.1) 0%,
+                transparent 70%
+            );
+            pointer-events: none;
+        }
+
+        /* Add creative elements */
+        .floating-shapes {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .shape {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            animation: floatShape 20s infinite linear;
+        }
+
+        .shape.triangle {
+            width: 0;
+            height: 0;
+            background: transparent;
+            border-left: 15px solid transparent;
+            border-right: 15px solid transparent;
+            border-bottom: 30px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .shape.square {
+            width: 20px;
+            height: 20px;
+            border-radius: 3px;
+        }
+
+        .shape.circle {
+            width: 25px;
+            height: 25px;
+        }
+
+        @keyframes floatShape {
+            0% { transform: translate(0, 0) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.8; }
+            90% { opacity: 0.8; }
+            100% { transform: translate(var(--moveX), var(--moveY)) rotate(360deg); opacity: 0; }
+        }
+
+        /* Add wave effect */
+        .wave {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 150px;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%23000000" fill-opacity="0.05" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,112C672,96,768,96,864,112C960,128,1056,160,1152,160C1248,160,1344,128,1392,112L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>');
+            background-size: cover;
+            background-repeat: no-repeat;
+            z-index: 0;
+            opacity: 0.4;
+            animation: waveAnimation 10s linear infinite;
+        }
+
+        @keyframes waveAnimation {
+            0% { background-position-x: 0; }
+            100% { background-position-x: 1440px; }
+        }
+
+        @media (max-width: 768px) {
+            .contact-info {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2.5rem;
+            }
+            
+            .header .lead {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="floating-shapes" id="floatingShapes"></div>
+    <div class="wave"></div>
+    <div class="header">
+        <div class="container">
+            <h1 style="font-size: 3.2rem; font-weight: 800; color: #ffffff; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px; position: relative; padding-bottom: 15px;">
+                <i class="fas fa-envelope me-2" style="color: #ffffff;"></i>
+                <span>Contact Us</span>
+                <div style="position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 200px; height: 4px; background: linear-gradient(90deg, #ffffff, #ffffff); border-radius: 4px;"></div>
+            </h1>
+            <p class="lead" style="color: #E0FFFF; font-size: 1.4rem; font-weight: 500; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3); max-width: 800px; margin: 0 auto; line-height: 1.6;">Get in touch with our team for inquiries, support, or collaboration opportunities</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <a href="{{ url_for('index') }}" class="back-button">
+            <i class="fas fa-arrow-left"></i>
+            <span>Back to Home</span>
+        </a>
+        
+        <div class="contact-section">
+            <div class="contact-info">
+                <div class="contact-card">
+                    <h3>General Inquiries</h3>
+                    <a href="mailto:info@marinewaste.com" class="email-link">
+                        <i class="fas fa-envelope"></i>info@marinewaste.com
+                    </a>
+                    <a href="mailto:sarveshmane2005@gmail.com" class="email-link">
+                        <i class="fas fa-envelope"></i>sarveshmane2005@gmail.com
+                    </a>
+                </div>
+                <div class="contact-card">
+                    <h3>Technical Support</h3>
+                    <a href="mailto:support@marinewaste.com" class="email-link">
+                        <i class="fas fa-envelope"></i>support@marinewaste.com
+                    </a>
+                    <a href="mailto:vinitnemade2004@gmail.com" class="email-link">
+                        <i class="fas fa-envelope"></i>vinitnemade2004@gmail.com
+                    </a>
+                    <a href="mailto:sayyadkaif2348@gmail.com" class="email-link">
+                        <i class="fas fa-envelope"></i>sayyadkaif2348@gmail.com
+                    </a>
+                </div>
+                <div class="contact-card">
+                    <h3>Research Collaboration</h3>
+                    <a href="mailto:research@marinewaste.com" class="email-link">
+                        <i class="fas fa-envelope"></i>research@marinewaste.com
+                    </a>
+                    <a href="mailto:apurva7kar2006@gmail.com" class="email-link">
+                        <i class="fas fa-envelope"></i>apurva7kar2006@gmail.com
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container footer-content">
+            <p>Marine Waste Detection System</p>
+            <div class="social-links">
+                <a href="https://github.com/Sarvesh6380" class="social-link">
+                    <i class="fab fa-github"></i>
+                    <span>GitHub</span>
+                </a>
+                <a href="{{ url_for('static', filename='docs/BLACKBOOK_FINAL_DRAFTT.pdf') }}" class="social-link" target="_blank">
+                    <i class="fas fa-book"></i>
+                    <span>Documentation</span>
+                </a>
+                <a href="/contact" class="social-link">
+                    <i class="fas fa-envelope"></i>
+                    <span>Contact</span>
+                </a>
+            </div>
+        </div>
+        <div class="footer-glow"></div>
+    </footer>
+
+    <script>
+        // Create floating shapes
+        function createFloatingShapes() {
+            const shapesContainer = document.getElementById('floatingShapes');
+            const shapeCount = 15;
+            const shapeTypes = ['circle', 'square', 'triangle'];
+            
+            for (let i = 0; i < shapeCount; i++) {
+                const shape = document.createElement('div');
+                const shapeType = shapeTypes[Math.floor(Math.random() * shapeTypes.length)];
+                shape.className = `shape ${shapeType}`;
+                
+                // Random position
+                shape.style.left = `${Math.random() * 100}%`;
+                shape.style.top = `${Math.random() * 100}%`;
+                
+                // Random movement direction
+                const moveX = (Math.random() - 0.5) * 200;
+                const moveY = (Math.random() - 0.5) * 200;
+                shape.style.setProperty('--moveX', `${moveX}px`);
+                shape.style.setProperty('--moveY', `${moveY}px`);
+                
+                // Random animation duration between 15 and 30 seconds
+                const duration = Math.random() * 15 + 15;
+                shape.style.animationDuration = `${duration}s`;
+                
+                // Random delay
+                const delay = Math.random() * 5;
+                shape.style.animationDelay = `${delay}s`;
+                
+                shapesContainer.appendChild(shape);
+            }
+        }
+
+        // Initialize shapes when the page loads
+        window.addEventListener('load', function() {
+            createFloatingShapes();
+        });
+    </script>
+</body>
+</html> 

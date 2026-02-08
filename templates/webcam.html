@@ -1,0 +1,886 @@
+            // Update parameters display
+            function updateParametersDisplay(data) {
+                // Get parameters container
+                const parametersContainer = document.getElementById('parametersContainer');
+                
+                // Clear previous content
+                parametersContainer.innerHTML = '';
+                
+                // Create parameters table
+                const table = document.createElement('table');
+                table.className = 'parameters-table';
+                
+                // Add header
+                const thead = document.createElement('thead');
+                thead.innerHTML = `
+                    <tr>
+                        <th>Parameter</th>
+                        <th>Value</th>
+                    </tr>
+                `;
+                table.appendChild(thead);
+                
+                // Add body
+                const tbody = document.createElement('tbody');
+                
+                // Calculate image accuracy based on detection confidence and image quality
+                const imageAccuracy = calculateImageAccuracy(data);
+                
+                // Add model type
+                tbody.innerHTML += `
+                    <tr>
+                        <td>Model Type</td>
+                        <td>${currentModel.toUpperCase()}</td>
+                    </tr>
+                `;
+                
+                // Add image accuracy
+                tbody.innerHTML += `
+                    <tr>
+                        <td>Image Accuracy</td>
+                        <td>${imageAccuracy}%</td>
+                    </tr>
+                `;
+                
+                // Add processing time if available
+                if (data.processing_time) {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>Processing Time</td>
+                            <td>${data.processing_time.toFixed(2)} ms</td>
+                        </tr>
+                    `;
+                }
+                
+                // Add confidence threshold
+                tbody.innerHTML += `
+                    <tr>
+                        <td>Confidence Threshold</td>
+                        <td>0.5</td>
+                    </tr>
+                `;
+                
+                // Add image resolution
+                tbody.innerHTML += `
+                    <tr>
+                        <td>Image Resolution</td>
+                        <td>${canvas.width} x ${canvas.height}</td>
+                    </tr>
+                `;
+                
+                // Add detection count
+                tbody.innerHTML += `
+                    <tr>
+                        <td>Detections</td>
+                        <td>${data.total_objects}</td>
+                    </tr>
+                `;
+                
+                table.appendChild(tbody);
+                parametersContainer.appendChild(table);
+                
+                // Show parameters container
+                parametersContainer.style.display = 'block';
+            }
+
+            // Calculate image accuracy based on detection results and image quality
+            function calculateImageAccuracy(data) {
+                if (!data.results || data.results.length === 0) {
+                    return 0;
+                }
+
+                // Calculate average confidence of all detections
+                const avgConfidence = data.results.reduce((sum, result) => sum + result.confidence, 0) / data.results.length;
+                
+                // Calculate image quality score (based on resolution and aspect ratio)
+                const resolution = canvas.width * canvas.height;
+                const aspectRatio = canvas.width / canvas.height;
+                const qualityScore = Math.min(100, (resolution / (1280 * 720)) * 100);
+                
+                // Calculate final accuracy (weighted average of confidence and quality)
+                const accuracy = (avgConfidence * 0.7 + (qualityScore / 100) * 0.3) * 100;
+                
+                return Math.round(accuracy);
+            }
+
+            // Calculate model accuracy based on detection results
+            function calculateModelAccuracy(data) {
+                if (!data.results || data.results.length === 0) {
+                    return 0;
+                }
+
+                // Get confidence scores for all detections
+                const confidenceScores = data.results.map(result => result.confidence);
+                
+                // Calculate average confidence
+                const avgConfidence = confidenceScores.reduce((sum, score) => sum + score, 0) / confidenceScores.length;
+                
+                // Convert to percentage and round
+                return Math.round(avgConfidence * 100);
+            }
+
+            // Update results display
+            function updateResults(data) {
+                // Show results container
+                resultsContainer.style.display = 'block';
+                resultsContainer.classList.add('show');
+                
+                // Calculate model accuracy
+                const modelAccuracy = calculateModelAccuracy(data);
+                
+                // Update stats
+                totalObjectsEl.textContent = data.total_objects;
+                wasteCountEl.textContent = data.waste_count;
+                noWasteCountEl.textContent = data.no_waste_count;
+                document.getElementById('modelAccuracy').textContent = `${modelAccuracy}%`;
+                
+                // Draw detection boxes on canvas
+                drawDetectionBoxes(data.results);
+                
+                // Update parameters display
+                updateParametersDisplay(data);
+            }
+
+            <style>
+                :root {
+                    --primary-color: #4F46E5;
+                    --secondary-color: #10B981;
+                    --accent-color: #4CAF50;
+                    --text-color: #333;
+                    --light-text: #fff;
+                    --card-bg: rgba(255, 255, 255, 0.9);
+                    --shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+                    --border-radius: 12px;
+                    --transition: all 0.3s ease;
+                    --bg-color: #b92b27;
+                }
+
+                body {
+                    background: #b92b27;  /* fallback for old browsers */
+                    background: -webkit-linear-gradient(to right, #1565C0, #b92b27);  /* Chrome 10-25, Safari 5.1-6 */
+                    background: linear-gradient(to right, #1565C0, #b92b27); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+                    min-height: 100vh;
+                    padding: 20px;
+                    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                    color: var(--text-color);
+                    position: relative;
+                    overflow-x: hidden;
+                }
+
+                @keyframes gradientAnimation {
+                    0% { background-position: 0% 50%; }
+                    50% { background-position: 100% 50%; }
+                    100% { background-position: 0% 50%; }
+                }
+
+                body::before {
+                    content: '';
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background-image: 
+                        radial-gradient(circle at 25% 25%, rgba(0, 0, 0, 0.05) 1px, transparent 1px),
+                        radial-gradient(circle at 75% 75%, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
+                    background-size: 50px 50px;
+                    z-index: 0;
+                    opacity: 0.5;
+                }
+
+                .container {
+                    max-width: 1200px;
+                    width: 100%;
+                    margin: 0 auto;
+                    padding: 20px;
+                    position: relative;
+                    z-index: 1;
+                }
+
+                .header {
+                    text-align: center;
+                    margin-bottom: 30px;
+                    color: var(--light-text);
+                    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+                }
+
+                .header h1 {
+                    font-size: 2.5rem;
+                    margin-bottom: 10px;
+                    font-weight: 700;
+                }
+
+                .header p {
+                    font-size: 1.1rem;
+                    opacity: 0.9;
+                    max-width: 600px;
+                    margin: 0 auto;
+                }
+
+                .card {
+                    background: var(--card-bg);
+                    border-radius: var(--border-radius);
+                    padding: 25px;
+                    margin-bottom: 30px;
+                    box-shadow: var(--shadow);
+                    backdrop-filter: blur(10px);
+                    border: 1px solid rgba(255, 255, 255, 0.2);
+                    transition: var(--transition);
+                }
+
+                .card:hover {
+                    transform: translateY(-5px);
+                    box-shadow: 0 12px 40px rgba(79, 70, 229, 0.25);
+                }
+
+                .card-title {
+                    font-size: 1.5rem;
+                    font-weight: 600;
+                    margin-bottom: 20px;
+                    color: var(--primary-color);
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                }
+
+                .card-title i {
+                    color: var(--secondary-color);
+                    font-size: 1.8rem;
+                }
+
+                .model-selector {
+                    display: flex;
+                    gap: 15px;
+                    margin-bottom: 25px;
+                    flex-wrap: wrap;
+                    justify-content: center;
+                }
+
+                .model-card {
+                    background: var(--card-bg);
+                    border-radius: var(--border-radius);
+                    padding: 20px;
+                    flex: 1;
+                    min-width: 200px;
+                    text-align: center;
+                    cursor: pointer;
+                    transition: var(--transition);
+                    border: 2px solid transparent;
+                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+                    position: relative;
+                    overflow: hidden;
+                }
+
+                .model-card:hover {
+                    transform: translateY(-5px);
+                    box-shadow: 0 8px 25px rgba(79, 70, 229, 0.3);
+                    border-color: rgba(79, 70, 229, 0.5);
+                }
+
+                .model-card.active {
+                    border-color: var(--primary-color);
+                    background: linear-gradient(135deg, rgba(21, 101, 192, 0.1), rgba(185, 43, 39, 0.1));
+                }
+
+                .model-card.active::before {
+                    transform: scaleX(1);
+                }
+
+                .model-card i {
+                    font-size: 2rem;
+                    margin-bottom: 10px;
+                    color: var(--primary-color);
+                }
+
+                .model-card h3 {
+                    margin: 10px 0;
+                    font-size: 1.2rem;
+                    color: var(--text-color);
+                }
+
+                .model-card p {
+                    font-size: 0.9rem;
+                    color: #666;
+                    margin: 0;
+                }
+
+                .camera-container {
+                    position: relative;
+                    margin-bottom: 30px;
+                    border-radius: var(--border-radius);
+                    overflow: hidden;
+                    box-shadow: var(--shadow);
+                    background: #000;
+                    transform: perspective(1000px) rotateX(0deg);
+                    transition: transform 0.5s ease;
+                }
+
+                .camera-container:hover {
+                    transform: perspective(1000px) rotateX(2deg);
+                }
+
+                #videoElement {
+                    width: 100%;
+                    border-radius: var(--border-radius);
+                    display: block;
+                }
+
+                #canvas {
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    border-radius: var(--border-radius);
+                }
+
+                .controls {
+                    display: flex;
+                    gap: 15px;
+                    margin-bottom: 25px;
+                    flex-wrap: wrap;
+                    justify-content: center;
+                }
+
+                .btn {
+                    padding: 12px 24px;
+                    border: none;
+                    border-radius: 50px;
+                    font-size: 1rem;
+                    font-weight: 600;
+                    cursor: pointer;
+                    transition: var(--transition);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 8px;
+                    min-width: 150px;
+                    position: relative;
+                    overflow: hidden;
+                }
+
+                .btn::before {
+                    content: '';
+                    position: absolute;
+                    top: 0;
+                    left: -100%;
+                    width: 100%;
+                    height: 100%;
+                    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+                    transition: 0.5s;
+                }
+
+                .btn:hover::before {
+                    left: 100%;
+                }
+
+                .btn-primary {
+                    background: var(--primary-color);
+                    color: var(--light-text);
+                }
+
+                .btn-primary:hover {
+                    background: #0d47a1;
+                    transform: translateY(-2px);
+                    box-shadow: 0 4px 12px rgba(21, 101, 192, 0.3);
+                }
+
+                .btn-secondary {
+                    background: var(--secondary-color);
+                    color: var(--light-text);
+                }
+
+                .btn-secondary:hover {
+                    background: #8e1815;
+                    transform: translateY(-2px);
+                    box-shadow: 0 4px 12px rgba(185, 43, 39, 0.3);
+                }
+
+                .btn-success {
+                    background: var(--accent-color);
+                    color: var(--light-text);
+                }
+
+                .btn-success:hover {
+                    background: #388e3c;
+                    transform: translateY(-2px);
+                    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+                }
+
+                .btn i {
+                    font-size: 1.1rem;
+                }
+
+                .stats {
+                    display: grid;
+                    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+                    gap: 20px;
+                    margin-bottom: 25px;
+                }
+
+                .stat-item {
+                    background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1));
+                    border-radius: var(--border-radius);
+                    padding: 20px;
+                    text-align: center;
+                    transition: var(--transition);
+                    position: relative;
+                    overflow: hidden;
+                }
+
+                .stat-item::after {
+                    content: '';
+                    position: absolute;
+                    top: -50%;
+                    left: -50%;
+                    width: 200%;
+                    height: 200%;
+                    background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+                    opacity: 0;
+                    transition: opacity 0.3s ease;
+                }
+
+                .stat-item:hover::after {
+                    opacity: 1;
+                }
+
+                .stat-value {
+                    font-size: 2rem;
+                    font-weight: 700;
+                    color: var(--primary-color);
+                    margin-bottom: 5px;
+                    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                }
+
+                .stat-label {
+                    font-size: 0.9rem;
+                    color: #666;
+                    font-weight: 500;
+                }
+
+                .parameters-container {
+                    margin: 20px 0;
+                    background: rgba(255, 255, 255, 0.7);
+                    border-radius: var(--border-radius);
+                    padding: 15px;
+                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+                }
+
+                .parameters-table {
+                    width: 100%;
+                    border-collapse: separate;
+                    border-spacing: 0;
+                    border-radius: var(--border-radius);
+                    overflow: hidden;
+                }
+
+                .parameters-table th,
+                .parameters-table td {
+                    padding: 12px 15px;
+                    text-align: left;
+                    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+                }
+
+                .parameters-table th {
+                    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+                    color: var(--light-text);
+                    font-weight: 600;
+                }
+
+                .parameters-table tr:last-child td {
+                    border-bottom: none;
+                }
+
+                .parameters-table tr:hover td {
+                    background: rgba(21, 101, 192, 0.05);
+                }
+
+                .feedback-form {
+                    margin-top: 25px;
+                    padding-top: 25px;
+                    border-top: 1px solid rgba(0, 0, 0, 0.1);
+                }
+
+                .feedback-form h4 {
+                    margin-bottom: 15px;
+                    color: var(--text-color);
+                    font-size: 1.1rem;
+                }
+
+                .feedback-options {
+                    display: flex;
+                    gap: 15px;
+                    margin-bottom: 15px;
+                }
+
+                .feedback-option {
+                    flex: 1;
+                    padding: 12px;
+                    border-radius: var(--border-radius);
+                    text-align: center;
+                    cursor: pointer;
+                    transition: var(--transition);
+                    background: rgba(255, 255, 255, 0.7);
+                    border: 1px solid rgba(0, 0, 0, 0.1);
+                }
+
+                .feedback-option:hover {
+                    transform: translateY(-2px);
+                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+                }
+
+                .feedback-option.selected {
+                    background: var(--primary-color);
+                    color: var(--light-text);
+                    border-color: var(--primary-color);
+                }
+
+                .feedback-option i {
+                    font-size: 1.5rem;
+                    margin-bottom: 5px;
+                    display: block;
+                }
+
+                .feedback-textarea {
+                    width: 100%;
+                    padding: 12px;
+                    border-radius: var(--border-radius);
+                    border: 1px solid rgba(0, 0, 0, 0.1);
+                    margin-bottom: 15px;
+                    resize: vertical;
+                    min-height: 80px;
+                    font-family: inherit;
+                    transition: var(--transition);
+                }
+
+                .feedback-textarea:focus {
+                    outline: none;
+                    border-color: var(--primary-color);
+                    box-shadow: 0 0 0 3px rgba(21, 101, 192, 0.2);
+                }
+
+                .loading {
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background: rgba(0, 0, 0, 0.7);
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    z-index: 1000;
+                    backdrop-filter: blur(5px);
+                }
+
+                .loading-spinner {
+                    width: 60px;
+                    height: 60px;
+                    border: 5px solid rgba(255, 255, 255, 0.3);
+                    border-radius: 50%;
+                    border-top-color: var(--primary-color);
+                    animation: spin 1s ease-in-out infinite;
+                }
+
+                @keyframes spin {
+                    to { transform: rotate(360deg); }
+                }
+
+                .loading-text {
+                    color: var(--light-text);
+                    margin-top: 15px;
+                    font-size: 1.1rem;
+                    font-weight: 500;
+                }
+
+                .results-container {
+                    margin-top: 30px;
+                    display: none;
+                    opacity: 0;
+                    transition: opacity 0.5s ease;
+                    width: 100%;
+                }
+
+                .results-container.show {
+                    display: block;
+                    opacity: 1;
+                    animation: slideUp 0.5s ease forwards;
+                }
+
+                @keyframes slideUp {
+                    from { transform: translateY(20px); opacity: 0; }
+                    to { transform: translateY(0); opacity: 1; }
+                }
+
+                .wave {
+                    position: fixed;
+                    bottom: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 150px;
+                    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%23000000" fill-opacity="0.05" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,112C672,96,768,96,864,112C960,128,1056,160,1152,160C1248,160,1344,128,1392,112L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>');
+                    background-size: cover;
+                    background-repeat: no-repeat;
+                    z-index: 0;
+                    opacity: 0.4;
+                    animation: waveAnimation 10s linear infinite;
+                }
+
+                @keyframes waveAnimation {
+                    0% { background-position-x: 0; }
+                    100% { background-position-x: 1440px; }
+                }
+
+                /* Add floating particles */
+                .particles {
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    z-index: 0;
+                    pointer-events: none;
+                }
+
+                .particle {
+                    position: absolute;
+                    background: rgba(255, 255, 255, 0.5);
+                    border-radius: 50%;
+                    pointer-events: none;
+                    animation: float 15s infinite linear;
+                }
+
+                @keyframes float {
+                    0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+                    10% { opacity: 0.8; }
+                    90% { opacity: 0.8; }
+                    100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
+                }
+
+                /* Responsive adjustments */
+                @media (max-width: 768px) {
+                    .header h1 {
+                        font-size: 2rem;
+                    }
+                    
+                    .model-selector {
+                        flex-direction: column;
+                    }
+                    
+                    .model-card {
+                        width: 100%;
+                    }
+                    
+                    .controls {
+                        flex-direction: column;
+                    }
+                    
+                    .btn {
+                        width: 100%;
+                    }
+                    
+                    .stats {
+                        grid-template-columns: 1fr 1fr;
+                    }
+                }
+
+                @media (max-width: 480px) {
+                    .stats {
+                        grid-template-columns: 1fr;
+                    }
+                    
+                    .card {
+                        padding: 15px;
+                    }
+                    
+                    .stat-value {
+                        font-size: 1.5rem;
+                    }
+                }
+
+                /* Add creative elements */
+                .floating-shapes {
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    z-index: 0;
+                    pointer-events: none;
+                    overflow: hidden;
+                }
+
+                .shape {
+                    position: absolute;
+                    background: rgba(255, 255, 255, 0.2);
+                    border-radius: 50%;
+                    animation: floatShape 20s infinite linear;
+                }
+
+                .shape.triangle {
+                    width: 0;
+                    height: 0;
+                    background: transparent;
+                    border-left: 15px solid transparent;
+                    border-right: 15px solid transparent;
+                    border-bottom: 30px solid rgba(255, 255, 255, 0.2);
+                }
+
+                .shape.square {
+                    width: 20px;
+                    height: 20px;
+                    border-radius: 3px;
+                }
+
+                .shape.circle {
+                    width: 25px;
+                    height: 25px;
+                }
+
+                @keyframes floatShape {
+                    0% { transform: translate(0, 0) rotate(0deg); opacity: 0; }
+                    10% { opacity: 0.8; }
+                    90% { opacity: 0.8; }
+                    100% { transform: translate(var(--moveX), var(--moveY)) rotate(360deg); opacity: 0; }
+                }
+            </style>
+
+            <div class="container">
+                <div class="header">
+                    <h1>Marine Waste Detection</h1>
+                    <p>Real-time detection of marine waste using advanced AI models</p>
+                </div>
+
+                <div class="model-selector">
+                    <div class="model-card active" data-model="cnn">
+                        <i class="fas fa-brain"></i>
+                        <h3>CNN Model</h3>
+                        <p>High accuracy for complex scenes</p>
+                    </div>
+                    <div class="model-card" data-model="rcnn">
+                        <i class="fas fa-cube"></i>
+                        <h3>R-CNN Model</h3>
+                        <p>Precise object localization</p>
+                    </div>
+                    <div class="model-card" data-model="mobilenet">
+                        <i class="fas fa-mobile-alt"></i>
+                        <h3>MobileNet</h3>
+                        <p>Fast processing for mobile devices</p>
+                    </div>
+                </div>
+
+                <div class="controls">
+                    <button class="btn btn-primary" id="startButton">
+                        <i class="fas fa-play"></i>
+                        Start Detection
+                    </button>
+                    <button class="btn btn-secondary" id="stopButton" disabled>
+                        <i class="fas fa-stop"></i>
+                        Stop Detection
+                    </button>
+                    <button class="btn btn-success" id="captureButton" disabled>
+                        <i class="fas fa-camera"></i>
+                        Capture Image
+                    </button>
+                </div>
+
+                <div class="results-container" id="resultsContainer">
+                    <div class="card">
+                        <div class="card-title">
+                            <i class="fas fa-chart-bar"></i>
+                            Detection Summary
+                        </div>
+                        <div class="stats">
+                            <div class="stat-item">
+                                <div class="stat-value" id="totalObjects">0</div>
+                                <div class="stat-label">Total Objects</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value" id="wasteCount">0</div>
+                                <div class="stat-label">Waste Items</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value" id="noWasteCount">0</div>
+                                <div class="stat-label">Non-Waste Items</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value" id="modelAccuracy">0%</div>
+                                <div class="stat-label">Model Accuracy</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="floating-shapes" id="floatingShapes"></div>
+            <div class="particles" id="particles"></div>
+            <div class="wave"></div>
+
+            // Create floating particles
+            function createParticles() {
+                const particlesContainer = document.getElementById('particles');
+                const particleCount = 30;
+                
+                for (let i = 0; i < particleCount; i++) {
+                    const particle = document.createElement('div');
+                    particle.className = 'particle';
+                    
+                    // Random size between 3 and 8 pixels
+                    const size = Math.random() * 5 + 3;
+                    particle.style.width = `${size}px`;
+                    particle.style.height = `${size}px`;
+                    
+                    // Random position
+                    particle.style.left = `${Math.random() * 100}%`;
+                    particle.style.top = `${Math.random() * 100}%`;
+                    
+                    // Random animation duration between 10 and 20 seconds
+                    const duration = Math.random() * 10 + 10;
+                    particle.style.animationDuration = `${duration}s`;
+                    
+                    // Random delay
+                    const delay = Math.random() * 5;
+                    particle.style.animationDelay = `${delay}s`;
+                    
+                    particlesContainer.appendChild(particle);
+                }
+            }
+
+            // Create floating shapes
+            function createFloatingShapes() {
+                const shapesContainer = document.getElementById('floatingShapes');
+                const shapeCount = 15;
+                const shapeTypes = ['circle', 'square', 'triangle'];
+                
+                for (let i = 0; i < shapeCount; i++) {
+                    const shape = document.createElement('div');
+                    const shapeType = shapeTypes[Math.floor(Math.random() * shapeTypes.length)];
+                    shape.className = `shape ${shapeType}`;
+                    
+                    // Random position
+                    shape.style.left = `${Math.random() * 100}%`;
+                    shape.style.top = `${Math.random() * 100}%`;
+                    
+                    // Random movement direction
+                    const moveX = (Math.random() - 0.5) * 200;
+                    const moveY = (Math.random() - 0.5) * 200;
+                    shape.style.setProperty('--moveX', `${moveX}px`);
+                    shape.style.setProperty('--moveY', `${moveY}px`);
+                    
+                    // Random animation duration between 15 and 30 seconds
+                    const duration = Math.random() * 15 + 15;
+                    shape.style.animationDuration = `${duration}s`;
+                    
+                    // Random delay
+                    const delay = Math.random() * 5;
+                    shape.style.animationDelay = `${delay}s`;
+                    
+                    shapesContainer.appendChild(shape);
+                }
+            }
+
+            // Initialize particles and shapes when the page loads
+            window.addEventListener('load', function() {
+                createParticles();
+                createFloatingShapes();
+            }); 

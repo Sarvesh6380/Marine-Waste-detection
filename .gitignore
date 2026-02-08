@@ -1,0 +1,39 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.env
+.venv
+venv/
+venv-3.11/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Project specific
+uploads/history/
+uploads/
+*.h5
+.DS_Store
+node_modules/
+
+# Large files and datasets
+data/
+test_data/
+PROJ\ SUB/
+combineddata/
+*.jpg
+*.png
+*.mp4
+*.avi
