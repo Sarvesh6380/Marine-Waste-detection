@@ -249,6 +249,3 @@ UIFLASK/
 - For any issues, contact the team via the Contact page.
 
 ---
-
-## License
-This project is for academic and research purposes. 
